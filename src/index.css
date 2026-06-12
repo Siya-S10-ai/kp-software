@@ -1,23 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 @theme {
   --color-steel-50: #f4f6f8;
   --color-steel-100: #e8ecf0;
   --color-steel-200: #d1d9e0;
+   --color-steel-300: #b0bec9;
+  --color-steel-400: #8a9aaa;
+  --color-steel-500: #607080;
+  --color-steel-600: #4e5e6e;
   --color-steel-700: #3d4f5f;
   --color-steel-800: #2a3744;
   --color-steel-900: #1a2332;
+
+  /* Brand Amber */
   --color-amber-brand: #e67e22;
   --color-amber-brand-dark: #d35400;
+
+  /* Brand gradient stops */
+  --color-brand-teal: #00C4CC;
+  --color-brand-blue:   #0047FF;
+  --color-brand-purple: #7D2AE8;
+}
+
+/* Global reset & base */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --gradient-brand: linear-gradient(135deg, #00C4CC 0%, #0047FF 50%, #7D2AE8 100%);
+  --gradient-brand-subtle: linear-gradient(135deg, rgba(0,196,204,0.08) 0%, rgba(0,71,255,0.06) 50%, rgba(125,42,232,0.08) 100%);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.07);
+  --shadow-nav: 0 2px 16px rgba(0,0,0,0.18);
 }
 
 body {
   margin: 0;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,  'Segoe UI', Roboto, sans-serif;
   background: var(--color-steel-50);
   color: var(--color-steel-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   min-height: 100vh;
+}
+
+* ── Typography scale ────────────────────────────────── */
+ 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+ 
+/* ── Form inputs — global polish ─────────────────────── */
+ 
+input, select, textarea {
+  font-family: inherit;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+ 
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #0047FF !important;
+  box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.12);
+}
+ 
+/* ── Scrollbar polish ────────────────────────────────── */
+ 
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-steel-100); }
+::-webkit-scrollbar-thumb { background: var(--color-steel-300); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-steel-400); }
+ 
+/* ── Gradient utility classes ────────────────────────── */
+ 
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+ 
+.text-brand-gradient {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+ 
+.border-brand-gradient {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+ 
+/* ── Nav mobile transition ───────────────────────────── */
+ 
+.mobile-menu-enter {
+  animation: slideDown 0.2s ease-out;
+}
+ 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+/* ── Status badge pulse for "new" items ─────────────── */
+ 
+.badge-pulse {
+  position: relative;
+}
+.badge-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0.4;
+  animation: badgePulse 2s ease infinite;
+}
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%       { transform: scale(1.15); opacity: 0; }
 }
