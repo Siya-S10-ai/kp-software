@@ -1,121 +1,102 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { PublicLayout, PortalLayout } from './components/Layout'
+import { ProtectedRoute } from './components/ProtectedRoute'
+
+import HomePage from './pages/public/HomePage'
+import ServicesPage from './pages/public/ServicesPage'
+import PortfolioPage from './pages/public/PortfolioPage'
+import ReviewsPage from './pages/public/ReviewsPage'
+import ContactPage from './pages/public/ContactPage'
+import LoginPage from './pages/LoginPage'
+
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminEnquiries from './pages/admin/AdminEnquiries'
+import AdminProjects from './pages/admin/AdminProjects'
+import AdminProjectDetail from './pages/admin/AdminProjectDetail'
+import AdminReviews from './pages/admin/AdminReviews'
+import AdminCustomers from './pages/admin/AdminCustomers'
+
+import WorkerDashboard from './pages/worker/WorkerDashboard'
+import WorkerProjectDetail from './pages/worker/WorkerProjectDetail'
+
+import CustomerDashboard from './pages/customer/CustomerDashboard'
+import CustomerProjectDetail from './pages/customer/CustomerProjectDetail'
+
+const ADMIN_ROLES = ['super_admin', 'operations_admin']
+
+const adminNav = [
+  { to: '/admin', label: 'Dashboard' },
+  { to: '/admin/enquiries', label: 'Enquiries' },
+  { to: '/admin/projects', label: 'Projects' },
+  { to: '/admin/customers', label: 'Customers' },
+  { to: '/admin/reviews', label: 'Reviews' },
+]
+
+export function AppRoutes() {
+  return (
+    <Routes>
+          <Route element={<PublicLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="portfolio" element={<PortfolioPage />} />
+            <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="login" element={<LoginPage />} />
+          </Route>
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={ADMIN_ROLES}>
+                <PortalLayout title="Admin Dashboard" navItems={adminNav} />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="enquiries" element={<AdminEnquiries />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="projects/:id" element={<AdminProjectDetail />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="reviews" element={<AdminReviews />} />
+          </Route>
+
+          <Route
+            path="/worker"
+            element={
+              <ProtectedRoute roles={['worker']}>
+                <PortalLayout title="Worker Portal" navItems={[{ to: '/worker', label: 'My Jobs' }]} />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<WorkerDashboard />} />
+            <Route path="projects/:id" element={<WorkerProjectDetail />} />
+          </Route>
+
+          <Route
+            path="/customer"
+            element={
+              <ProtectedRoute roles={['customer']}>
+                <PortalLayout title="Customer Portal" navItems={[{ to: '/customer', label: 'My Projects' }]} />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<CustomerDashboard />} />
+            <Route path="projects/:id" element={<CustomerProjectDetail />} />
+          </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

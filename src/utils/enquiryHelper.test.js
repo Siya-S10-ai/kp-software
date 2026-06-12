@@ -1,3 +1,6 @@
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 const {
   validateEnquiry,
   buildEnquiry,
@@ -5,7 +8,7 @@ const {
   formatEnquiryForClient,
   VALID_SERVICES,
   ENQUIRY_STATUSES,
-} = require('./enquiryHelpers')
+} = require('../../kp-backend/utils/enquiryHelpers.js')
 
 // ─── Enquiry Helper Unit Tests ─────────────────────────────────────────────────
 // Run with: npx jest src/utils/enquiryHelpers.test.js
