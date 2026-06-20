@@ -1,6 +1,6 @@
 const request = require('supertest')
 const createApp = require('../app')
-const { resetStore } = require('../store')
+const { getStore, resetStore } = require('../store')
 
 let app
 
@@ -130,6 +130,104 @@ describe('customer visibility', () => {
 
     expect(customerUpdates.body.length).toBe(1)
     expect(customerUpdates.body[0].note).toMatch(/powder coating/i)
+  })
+})
+
+describe('project messages', () => {
+  it('enforces reply permissions and author-only edits', async () => {
+    const workerToken = await loginAs('worker@kp.com')
+    const customerToken = await loginAs('customer@kp.com')
+
+    const projects = await request(app)
+      .get('/api/projects')
+      .set('Authorization', `Bearer ${customerToken}`)
+    const projectId = projects.body[0].id
+
+    const workerMessage = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send({
+        projectId,
+        text: 'Initial worker update',
+      })
+    expect(workerMessage.status).toBe(201)
+
+    const workerOwnReply = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send({
+        projectId,
+        text: 'Replying to myself',
+        parentMessageId: workerMessage.body.id,
+      })
+    expect(workerOwnReply.status).toBe(403)
+
+    const customerReply = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({
+        projectId,
+        text: 'Thanks for the update',
+        parentMessageId: workerMessage.body.id,
+      })
+    expect(customerReply.status).toBe(201)
+
+    const workerCustomerReply = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send({
+        projectId,
+        text: 'Happy to help',
+        parentMessageId: customerReply.body.id,
+      })
+    expect(workerCustomerReply.status).toBe(201)
+
+    const customerOwnReply = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({
+        projectId,
+        text: 'Replying to my own reply',
+        parentMessageId: customerReply.body.id,
+      })
+    expect(customerOwnReply.status).toBe(403)
+
+    const store = await getStore()
+    const now = new Date().toISOString()
+    const otherWorkerMessage = await store.insert('projectMessages', {
+      id: store.generateId(),
+      projectId,
+      authorId: 'another-worker-user',
+      authorName: 'Another Worker',
+      authorRole: 'worker',
+      text: 'Same side update',
+      parentMessageId: null,
+      createdAt: now,
+      updatedAt: now,
+    })
+
+    const workerSameRoleReply = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send({
+        projectId,
+        text: 'Replying to another worker',
+        parentMessageId: otherWorkerMessage.id,
+      })
+    expect(workerSameRoleReply.status).toBe(403)
+
+    const editOwn = await request(app)
+      .patch(`/api/messages/${workerMessage.body.id}`)
+      .set('Authorization', `Bearer ${workerToken}`)
+      .send({ text: 'Updated worker message' })
+    expect(editOwn.status).toBe(200)
+    expect(editOwn.body.text).toBe('Updated worker message')
+
+    const editSomeoneElse = await request(app)
+      .patch(`/api/messages/${workerMessage.body.id}`)
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({ text: 'Customer edit attempt' })
+    expect(editSomeoneElse.status).toBe(403)
   })
 })
 
