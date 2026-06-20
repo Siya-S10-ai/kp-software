@@ -12,6 +12,7 @@ const COLLECTIONS = [
   'mediaFiles',
   'reviews',
   'reviewComments',
+  'projectMessages',
 ]
 
 async function createMongoStore(uri) {
