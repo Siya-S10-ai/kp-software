@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../../api/client'
 import { PageHeader, Card, Button, StatusBadge, Alert } from '../../components/ui'
+import ProjectCommunication from '../../components/ProjectCommunication'
 
 export default function WorkerProjectDetail() {
   const { id } = useParams()
@@ -135,6 +136,8 @@ export default function WorkerProjectDetail() {
           <Button type="submit">Submit note</Button>
         </form>
       </Card>
+
+      <ProjectCommunication projectId={id} />
 
       <Card>
         <h2 className="font-semibold mb-3">Upload progress photo</h2>
