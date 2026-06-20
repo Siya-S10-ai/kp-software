@@ -12,6 +12,7 @@ function createMemoryStore() {
     mediaFiles: [],
     reviews: [],
     reviewComments: [],
+    projectMessages: [],
   }
 
   function generateId() {
