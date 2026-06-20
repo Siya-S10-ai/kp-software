@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../../api/client'
 import { PageHeader, Card, Button, StatusBadge, Alert } from '../../components/ui'
+import ProjectCommunication from '../../components/ProjectCommunication'
 
 export default function CustomerProjectDetail() {
   const { id } = useParams()
@@ -81,6 +82,8 @@ export default function CustomerProjectDetail() {
           </ul>
         )}
       </Card>
+
+      <ProjectCommunication projectId={id} />
 
       <Card className="mb-6">
         <h2 className="font-semibold mb-3">Photos & media</h2>
